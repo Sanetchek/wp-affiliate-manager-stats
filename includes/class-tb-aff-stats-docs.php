@@ -46,6 +46,13 @@ final class TB_Aff_Stats_Docs
 
     public static function docs_url(): string
     {
+        if (function_exists('menu_page_url')) {
+            $url = menu_page_url(self::MENU_SLUG, false);
+            if (is_string($url) && $url !== '') {
+                return $url;
+            }
+        }
+
         return admin_url('admin.php?page=' . self::MENU_SLUG);
     }
 
