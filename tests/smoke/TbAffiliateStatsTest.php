@@ -16,6 +16,7 @@ $required = [
     'wp-affiliate-manager-stats.php',
     'includes/class-tb-aff-stats-query.php',
     'includes/class-tb-aff-stats-attribution.php',
+    'includes/class-tb-aff-stats-commission.php',
     'includes/class-tb-aff-stats-admin-list.php',
     'includes/class-tb-aff-stats-admin-detail.php',
     'includes/class-tb-aff-stats-partner.php',
@@ -47,10 +48,29 @@ foreach (
         'tb_aff_stats_filter_template_files',
         'class-tb-aff-stats-query.php',
         'class-tb-aff-stats-attribution.php',
+        'class-tb-aff-stats-commission.php',
+        'TB_Aff_Stats_Commission::init',
     ] as $needle
 ) {
     if (strpos($bootstrap, $needle) === false) {
         fwrite(STDERR, "Bootstrap missing: {$needle}\n");
+        $failed++;
+    }
+}
+
+$commission = (string) file_get_contents($root . '/includes/class-tb-aff-stats-commission.php');
+foreach (
+    [
+        'tb_aff_stats_enable_pmpro_commission',
+        "add_action('pmpro_after_checkout'",
+        'wpam_process_affiliate_commission',
+        'level_is_paid',
+        'award_commission',
+        'tb_wpam_award_on_pmpro_after_checkout',
+    ] as $needle
+) {
+    if (strpos($commission, $needle) === false) {
+        fwrite(STDERR, "Commission missing: {$needle}\n");
         $failed++;
     }
 }

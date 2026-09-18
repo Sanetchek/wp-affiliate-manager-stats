@@ -30,7 +30,25 @@ No custom theme required. The plugin ships fallback WPAM templates; if your them
 | Free / Paid | Active PMPro level (paid = Advanced / Pro / Enterprise by name, or theme tier helpers if present) |
 | EPC | WPAM credit commissions ÷ visits |
 
-Commissions for Free signups are **not** awarded by this plugin. Wire paid checkout commissions yourself (or use a theme purchase bridge) via `do_action('wpam_process_affiliate_commission', $args)`.
+Free signups never get a commission. Native PMPro paid checkouts are handled by this plugin (see below). Off-site gateways (Whop, crypto) still need a fulfillment bridge.
+
+## Commissions (native PMPro)
+
+On sites **without** a custom purchase bridge, the plugin awards WPAM commissions on successful native PMPro checkout (`pmpro_after_checkout`):
+
+- Only **paid** levels (price &gt; 0 / paid level map)
+- Uses first-touch `tb_wpam_referrer_id` (or `wpam_id` cookie)
+- WPAM dedupes by `txn_id`
+
+Disable if you handle commissions yourself:
+
+```php
+add_filter('tb_aff_stats_enable_pmpro_commission', '__return_false');
+```
+
+On TipsBattle the theme purchase bridge is detected automatically — the plugin does **not** double-award.
+
+Whop / crypto / off-site gateways still need a fulfillment hook that calls `do_action('wpam_process_affiliate_commission', $args)` (or the theme bridge).
 
 ## Optional theme hooks
 

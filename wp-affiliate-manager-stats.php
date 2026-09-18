@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Affiliate Manager Stats
  * Description: Compact referral funnel stats for WP Affiliate Manager — Click → Signup → Paid, EPC, and readable admin/partner cards.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Sanetchek
  * Author URI: https://github.com/Sanetchek
  * Text Domain: wpam-aff-stats
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TB_AFF_STATS_VERSION', '1.0.0');
+define('TB_AFF_STATS_VERSION', '1.1.0');
 define('TB_AFF_STATS_PLUGIN_FILE', __FILE__);
 define('TB_AFF_STATS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TB_AFF_STATS_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -29,6 +29,7 @@ if (!defined('TB_WPAM_REFERRER_META_KEY')) {
 
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-query.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-attribution.php';
+require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-commission.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-admin-list.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-admin-detail.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-partner.php';
@@ -52,6 +53,7 @@ function tb_aff_stats_bootstrap(): void
     }
 
     TB_Aff_Stats_Attribution::init();
+    TB_Aff_Stats_Commission::init();
     TB_Aff_Stats_Admin_List::init();
     TB_Aff_Stats_Admin_Detail::init();
     TB_Aff_Stats_Partner::init();
