@@ -1,0 +1,184 @@
+/**
+ * TipsBattle Affiliate Stats — WPAM admin (list + detail + readable fields).
+ */
+
+/* List table: avoid squeezed columns */
+body.wp-admin .wpam-click-throughs {
+  overflow-x: auto;
+}
+
+body.wp-admin .wpam-click-throughs .wp-list-table {
+  min-width: 960px;
+}
+
+body.wp-admin .wpam-click-throughs .column-funnel {
+  min-width: 180px;
+  width: 200px;
+}
+
+.tb-aff-funnel-cell {
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.tb-aff-funnel-cell__flow {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1d2327;
+}
+
+.tb-aff-funnel-cell__meta {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #646970;
+}
+
+.tb-aff-funnel-cell__rates {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #2c3338;
+}
+
+/* Detail funnel panel */
+.tb-aff-stats-detail {
+  margin: 16px 0 24px;
+  padding: 16px 20px 20px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+}
+
+.tb-aff-stats-detail__header h2 {
+  margin: 0 0 4px;
+  font-size: 1.2em;
+}
+
+.tb-aff-stats-detail__header .description {
+  margin: 0 0 14px;
+}
+
+.tb-aff-stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.tb-aff-stats-card {
+  padding: 12px 14px;
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+}
+
+.tb-aff-stats-card__value {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #1d2327;
+}
+
+.tb-aff-stats-card__label {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #646970;
+}
+
+.tb-aff-stats-referred {
+  margin-top: 20px;
+}
+
+.tb-aff-stats-referred h3 {
+  margin: 0 0 10px;
+}
+
+.tb-aff-stats-referred__table {
+  margin-top: 8px;
+}
+
+.tb-aff-stats-referred__pager {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/*
+ * Readable WPAM management fields on affiliate detail.
+ * Labels above inputs; 2-col grid on wide screens.
+ */
+body.wp-admin.post-type-page #wpbody-content table.widefat tbody tr td,
+body.wp-admin .wrap #tabs table.widefat tbody tr td {
+  vertical-align: top;
+}
+
+body.wp-admin .wrap #tabs table.widefat input[type="text"],
+body.wp-admin .wrap #tabs table.widefat input[type="email"],
+body.wp-admin .wrap #tabs table.widefat input[type="number"],
+body.wp-admin .wrap #tabs table.widefat select,
+body.wp-admin .wrap #tabs table.widefat textarea {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 32px;
+}
+
+body.wp-admin .wrap #tabs table.widefat label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+body.wp-admin .wrap #tabs table.widefat td:first-child {
+  width: 220px;
+  min-width: 160px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  white-space: normal;
+  line-height: 1.45;
+}
+
+body.wp-admin .wrap #tabs table.widefat td:nth-child(2) {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+@media (min-width: 1100px) {
+  body.wp-admin .wrap #fragment-3 table.widefat tbody,
+  body.wp-admin .wrap #tabs table.widefat.tb-aff-contact-grid tbody {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+  }
+
+  body.wp-admin .wrap #fragment-3 table.widefat tbody tr,
+  body.wp-admin .wrap #tabs table.widefat.tb-aff-contact-grid tbody tr {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+  }
+}
+
+@media (max-width: 782px) {
+  body.wp-admin .wrap #tabs table.widefat td:first-child {
+    width: auto;
+    display: block;
+    padding-bottom: 4px;
+  }
+
+  body.wp-admin .wrap #tabs table.widefat td:nth-child(2) {
+    display: block;
+    padding-top: 0;
+  }
+
+  body.wp-admin .wrap #tabs table.widefat input[type="text"],
+  body.wp-admin .wrap #tabs table.widefat input[type="email"],
+  body.wp-admin .wrap #tabs table.widefat select,
+  body.wp-admin .wrap #tabs table.widefat textarea {
+    max-width: 100%;
+  }
+}
