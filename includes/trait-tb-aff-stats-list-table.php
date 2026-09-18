@@ -2,7 +2,7 @@
 /**
  * Shared Funnel column behavior for WPAM affiliate list tables.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -23,7 +23,7 @@ trait TB_Aff_Stats_List_Table_Trait
 
         foreach ($columns as $key => $label) {
             if ($key === 'firstName') {
-                $rebuilt['affiliateName'] = __('Name', 'tipsbattle-aff-stats');
+                $rebuilt['affiliateName'] = __('Name', 'wpam-aff-stats');
                 continue;
             }
             if ($key === 'lastName') {
@@ -31,12 +31,12 @@ trait TB_Aff_Stats_List_Table_Trait
             }
             $rebuilt[$key] = $label;
             if ($key === 'bountyAmount' || ($key === 'websiteUrl' && !isset($rebuilt['funnel']))) {
-                $rebuilt['funnel'] = __('Funnel', 'tipsbattle-aff-stats');
+                $rebuilt['funnel'] = __('Funnel', 'wpam-aff-stats');
             }
         }
 
         if (!isset($rebuilt['funnel'])) {
-            $rebuilt['funnel'] = __('Funnel', 'tipsbattle-aff-stats');
+            $rebuilt['funnel'] = __('Funnel', 'wpam-aff-stats');
         }
 
         return $rebuilt;
@@ -100,13 +100,13 @@ trait TB_Aff_Stats_List_Table_Trait
         $html .= esc_html((string) $visits) . ' → ' . esc_html((string) $signups) . ' → ' . esc_html((string) $paid);
         $html .= '</div>';
         $html .= '<div class="tb-aff-funnel-cell__meta">';
-        $html .= esc_html__('clicks · signups · paid', 'tipsbattle-aff-stats');
+        $html .= esc_html__('clicks · signups · paid', 'wpam-aff-stats');
         $html .= '</div>';
         $html .= '<div class="tb-aff-funnel-cell__rates">';
         $html .= esc_html(
             sprintf(
                 /* translators: 1: signup-to-paid percent, 2: EPC amount */
-                __('Signup→Paid %1$s · EPC %2$s', 'tipsbattle-aff-stats'),
+                __('Signup→Paid %1$s · EPC %2$s', 'wpam-aff-stats'),
                 $signup_to_paid,
                 $epc
             )

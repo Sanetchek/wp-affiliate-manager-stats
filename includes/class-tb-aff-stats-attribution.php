@@ -2,7 +2,7 @@
 /**
  * Persist first-touch WPAM referrer on registration.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);

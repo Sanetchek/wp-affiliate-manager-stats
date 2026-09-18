@@ -2,7 +2,7 @@
 /**
  * My Affiliates list — compact Funnel column.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);

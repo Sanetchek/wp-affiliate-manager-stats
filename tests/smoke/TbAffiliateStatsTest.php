@@ -1,10 +1,10 @@
 <?php
 /**
- * Smoke tests for TipsBattle Affiliate Stats plugin.
+ * Smoke tests for WP Affiliate Manager Stats plugin.
  *
  * Run: php tests/smoke/TbAffiliateStatsTest.php
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -13,7 +13,7 @@ $failed = 0;
 $root = dirname(__DIR__, 2);
 
 $required = [
-    'tipsbattle-affiliate-stats.php',
+    'wp-affiliate-manager-stats.php',
     'includes/class-tb-aff-stats-query.php',
     'includes/class-tb-aff-stats-attribution.php',
     'includes/class-tb-aff-stats-admin-list.php',
@@ -36,11 +36,11 @@ foreach ($required as $rel) {
     }
 }
 
-$bootstrap = (string) file_get_contents($root . '/tipsbattle-affiliate-stats.php');
+$bootstrap = (string) file_get_contents($root . '/wp-affiliate-manager-stats.php');
 foreach (
     [
-        'Plugin Name: TipsBattle Affiliate Stats',
-        'Text Domain: tipsbattle-aff-stats',
+        'Plugin Name: WP Affiliate Manager Stats',
+        'Text Domain: wpam-aff-stats',
         'Requires Plugins: affiliates-manager, paid-memberships-pro',
         'TB_WPAM_REFERRER_META_KEY',
         "add_action('plugins_loaded', 'tb_aff_stats_bootstrap'",

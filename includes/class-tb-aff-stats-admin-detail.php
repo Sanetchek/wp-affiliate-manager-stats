@@ -2,7 +2,7 @@
 /**
  * Affiliate detail — funnel metric cards + referred users table.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -53,53 +53,53 @@ final class TB_Aff_Stats_Admin_Detail
 
         $cards = [
             [
-                'label' => __('Clicks', 'tipsbattle-aff-stats'),
+                'label' => __('Clicks', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['visits'],
             ],
             [
-                'label' => __('Unique', 'tipsbattle-aff-stats'),
+                'label' => __('Unique', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['unique_visits'],
             ],
             [
-                'label' => __('Signups', 'tipsbattle-aff-stats'),
+                'label' => __('Signups', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['signups'],
             ],
             [
-                'label' => __('Free', 'tipsbattle-aff-stats'),
+                'label' => __('Free', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['free'],
             ],
             [
-                'label' => __('Paid', 'tipsbattle-aff-stats'),
+                'label' => __('Paid', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['paid'],
             ],
             [
-                'label' => __('Advanced', 'tipsbattle-aff-stats'),
+                'label' => __('Advanced', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['advanced'],
             ],
             [
-                'label' => __('Pro', 'tipsbattle-aff-stats'),
+                'label' => __('Pro', 'wpam-aff-stats'),
                 'value' => (string) (int) $stats['pro'],
             ],
             [
-                'label' => __('Click → Signup', 'tipsbattle-aff-stats'),
+                'label' => __('Click → Signup', 'wpam-aff-stats'),
                 'value' => TB_Aff_Stats_Query::format_percent((float) $stats['click_to_signup']),
             ],
             [
-                'label' => __('Signup → Paid', 'tipsbattle-aff-stats'),
+                'label' => __('Signup → Paid', 'wpam-aff-stats'),
                 'value' => TB_Aff_Stats_Query::format_percent((float) $stats['signup_to_paid']),
             ],
             [
-                'label' => __('EPC', 'tipsbattle-aff-stats'),
+                'label' => __('EPC', 'wpam-aff-stats'),
                 'value' => TB_Aff_Stats_Query::format_epc((float) $stats['epc'], (int) $stats['visits']),
             ],
         ];
 
         echo '<div class="tb-aff-stats-detail wrap">';
         echo '<div class="tb-aff-stats-detail__header">';
-        echo '<h2>' . esc_html__('Referral funnel', 'tipsbattle-aff-stats') . '</h2>';
+        echo '<h2>' . esc_html__('Referral funnel', 'wpam-aff-stats') . '</h2>';
         echo '<p class="description">' . esc_html__(
             'Click → Signup → Paid funnel for this affiliate (current membership snapshot).',
-            'tipsbattle-aff-stats'
+            'wpam-aff-stats'
         ) . '</p>';
         echo '</div>';
 
@@ -113,17 +113,17 @@ final class TB_Aff_Stats_Admin_Detail
         echo '</div>';
 
         echo '<div class="tb-aff-stats-referred">';
-        echo '<h3>' . esc_html__('Referred users', 'tipsbattle-aff-stats') . '</h3>';
+        echo '<h3>' . esc_html__('Referred users', 'wpam-aff-stats') . '</h3>';
 
         if ($referred['items'] === []) {
-            echo '<p>' . esc_html__('No referred signups attributed yet.', 'tipsbattle-aff-stats') . '</p>';
+            echo '<p>' . esc_html__('No referred signups attributed yet.', 'wpam-aff-stats') . '</p>';
         } else {
             echo '<table class="widefat striped tb-aff-stats-referred__table">';
             echo '<thead><tr>';
-            echo '<th>' . esc_html__('User', 'tipsbattle-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Email', 'tipsbattle-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Plan', 'tipsbattle-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Registered', 'tipsbattle-aff-stats') . '</th>';
+            echo '<th>' . esc_html__('User', 'wpam-aff-stats') . '</th>';
+            echo '<th>' . esc_html__('Email', 'wpam-aff-stats') . '</th>';
+            echo '<th>' . esc_html__('Plan', 'wpam-aff-stats') . '</th>';
+            echo '<th>' . esc_html__('Registered', 'wpam-aff-stats') . '</th>';
             echo '</tr></thead><tbody>';
 
             foreach ($referred['items'] as $row) {
@@ -157,19 +157,19 @@ final class TB_Aff_Stats_Admin_Detail
                 echo '<div class="tb-aff-stats-referred__pager">';
                 if ($page > 1) {
                     $prev = add_query_arg('tb_ref_paged', $page - 1, $base);
-                    echo '<a class="button" href="' . esc_url($prev) . '">' . esc_html__('Previous', 'tipsbattle-aff-stats') . '</a> ';
+                    echo '<a class="button" href="' . esc_url($prev) . '">' . esc_html__('Previous', 'wpam-aff-stats') . '</a> ';
                 }
                 echo '<span>' . esc_html(
                     sprintf(
                         /* translators: 1: current page, 2: total pages */
-                        __('Page %1$d of %2$d', 'tipsbattle-aff-stats'),
+                        __('Page %1$d of %2$d', 'wpam-aff-stats'),
                         $page,
                         $total_pages
                     )
                 ) . '</span> ';
                 if ($page < $total_pages) {
                     $next = add_query_arg('tb_ref_paged', $page + 1, $base);
-                    echo '<a class="button" href="' . esc_url($next) . '">' . esc_html__('Next', 'tipsbattle-aff-stats') . '</a>';
+                    echo '<a class="button" href="' . esc_url($next) . '">' . esc_html__('Next', 'wpam-aff-stats') . '</a>';
                 }
                 echo '</div>';
             }

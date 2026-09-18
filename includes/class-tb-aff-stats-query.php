@@ -2,7 +2,7 @@
 /**
  * Referral funnel query helpers (Click → Signup → Paid, EPC).
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -542,25 +542,25 @@ final class TB_Aff_Stats_Query
     private static function resolve_user_tier_label(int $user_id, array $level_map): string
     {
         if ($user_id <= 0 || !function_exists('pmpro_getMembershipLevelForUser')) {
-            return __('Free', 'tipsbattle-aff-stats');
+            return __('Free', 'wpam-aff-stats');
         }
 
         $level = pmpro_getMembershipLevelForUser($user_id);
         if (!$level || empty($level->id)) {
-            return __('Free', 'tipsbattle-aff-stats');
+            return __('Free', 'wpam-aff-stats');
         }
 
         $id = (int) $level->id;
         if (in_array($id, $level_map['pro'], true)) {
             $name = strtolower((string) ($level->name ?? ''));
             if (str_contains($name, 'enterprise')) {
-                return __('Enterprise', 'tipsbattle-aff-stats');
+                return __('Enterprise', 'wpam-aff-stats');
             }
 
-            return __('Pro', 'tipsbattle-aff-stats');
+            return __('Pro', 'wpam-aff-stats');
         }
         if (in_array($id, $level_map['advanced'], true)) {
-            return __('Advanced', 'tipsbattle-aff-stats');
+            return __('Advanced', 'wpam-aff-stats');
         }
 
         if (function_exists('tb_resolve_membership_tier') && function_exists('tb_get_membership_tier_label')) {
@@ -569,7 +569,7 @@ final class TB_Aff_Stats_Query
             return (string) tb_get_membership_tier_label($tier);
         }
 
-        return __('Free', 'tipsbattle-aff-stats');
+        return __('Free', 'wpam-aff-stats');
     }
 
     public static function format_percent(float $ratio): string

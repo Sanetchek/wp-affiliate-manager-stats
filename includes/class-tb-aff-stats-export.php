@@ -2,7 +2,7 @@
 /**
  * CSV export intercept with full funnel stats.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -25,17 +25,17 @@ final class TB_Aff_Stats_Export
      */
     public static function filter_export_columns(array $columns): array
     {
-        $columns['visits'] = __('Visits', 'tipsbattle-aff-stats');
-        $columns['unique_visits'] = __('Unique visits', 'tipsbattle-aff-stats');
-        $columns['signups'] = __('Signups', 'tipsbattle-aff-stats');
-        $columns['free'] = __('Free', 'tipsbattle-aff-stats');
-        $columns['paid'] = __('Paid', 'tipsbattle-aff-stats');
-        $columns['advanced'] = __('Advanced', 'tipsbattle-aff-stats');
-        $columns['pro'] = __('Pro', 'tipsbattle-aff-stats');
-        $columns['click_to_signup'] = __('Click→Signup %', 'tipsbattle-aff-stats');
-        $columns['signup_to_paid'] = __('Signup→Paid %', 'tipsbattle-aff-stats');
-        $columns['click_to_paid'] = __('Click→Paid %', 'tipsbattle-aff-stats');
-        $columns['epc'] = __('EPC', 'tipsbattle-aff-stats');
+        $columns['visits'] = __('Visits', 'wpam-aff-stats');
+        $columns['unique_visits'] = __('Unique visits', 'wpam-aff-stats');
+        $columns['signups'] = __('Signups', 'wpam-aff-stats');
+        $columns['free'] = __('Free', 'wpam-aff-stats');
+        $columns['paid'] = __('Paid', 'wpam-aff-stats');
+        $columns['advanced'] = __('Advanced', 'wpam-aff-stats');
+        $columns['pro'] = __('Pro', 'wpam-aff-stats');
+        $columns['click_to_signup'] = __('Click→Signup %', 'wpam-aff-stats');
+        $columns['signup_to_paid'] = __('Signup→Paid %', 'wpam-aff-stats');
+        $columns['click_to_paid'] = __('Click→Paid %', 'wpam-aff-stats');
+        $columns['epc'] = __('EPC', 'wpam-aff-stats');
 
         return $columns;
     }

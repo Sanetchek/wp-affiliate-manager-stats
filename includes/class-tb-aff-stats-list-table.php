@@ -2,7 +2,7 @@
 /**
  * WPAM list-table subclass with Funnel column (loaded after parent exists).
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -48,11 +48,11 @@ if (class_exists('WPAM_List_Affiliates_Table', false)) {
                 'status' => __('Status', 'affiliates-manager'),
                 'balance' => __('Balance', 'affiliates-manager'),
                 'earnings' => __('Earnings', 'affiliates-manager'),
-                'affiliateName' => __('Name', 'tipsbattle-aff-stats'),
+                'affiliateName' => __('Name', 'wpam-aff-stats'),
                 'email' => __('Email', 'affiliates-manager'),
-                'bountyType' => __('Type', 'tipsbattle-aff-stats'),
-                'bountyAmount' => __('Amount', 'tipsbattle-aff-stats'),
-                'funnel' => __('Funnel', 'tipsbattle-aff-stats'),
+                'bountyType' => __('Type', 'wpam-aff-stats'),
+                'bountyAmount' => __('Amount', 'wpam-aff-stats'),
+                'funnel' => __('Funnel', 'wpam-aff-stats'),
                 'dateCreated' => __('Date Joined', 'affiliates-manager'),
                 'viewDetail' => '',
             ];

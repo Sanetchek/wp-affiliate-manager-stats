@@ -2,7 +2,7 @@
 /**
  * Partner dashboard funnel cards (All time / Today / This month).
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);
@@ -59,17 +59,17 @@ final class TB_Aff_Stats_Partner
 
         $periods = [
             'all' => [
-                'title' => __('All time', 'tipsbattle-aff-stats'),
+                'title' => __('All time', 'wpam-aff-stats'),
                 'range' => null,
                 'emphasis' => true,
             ],
             'today' => [
-                'title' => __('Today', 'tipsbattle-aff-stats'),
+                'title' => __('Today', 'wpam-aff-stats'),
                 'range' => TB_Aff_Stats_Query::range_for('today'),
                 'emphasis' => false,
             ],
             'month' => [
-                'title' => __('This month', 'tipsbattle-aff-stats'),
+                'title' => __('This month', 'wpam-aff-stats'),
                 'range' => TB_Aff_Stats_Query::range_for('month'),
                 'emphasis' => false,
             ],
@@ -82,16 +82,16 @@ final class TB_Aff_Stats_Partner
             echo '<section class="tb-aff-stats-partner__section' . esc_attr($class) . '">';
             echo '<h3 class="tb-aff-stats-partner__title">' . esc_html((string) $period['title']) . '</h3>';
             echo '<div class="tb-aff-stats-cards">';
-            self::render_card(__('Clicks', 'tipsbattle-aff-stats'), (string) (int) $stats['visits']);
-            self::render_card(__('Signups', 'tipsbattle-aff-stats'), (string) (int) $stats['signups']);
-            self::render_card(__('Free', 'tipsbattle-aff-stats'), (string) (int) $stats['free']);
-            self::render_card(__('Paid', 'tipsbattle-aff-stats'), (string) (int) $stats['paid']);
+            self::render_card(__('Clicks', 'wpam-aff-stats'), (string) (int) $stats['visits']);
+            self::render_card(__('Signups', 'wpam-aff-stats'), (string) (int) $stats['signups']);
+            self::render_card(__('Free', 'wpam-aff-stats'), (string) (int) $stats['free']);
+            self::render_card(__('Paid', 'wpam-aff-stats'), (string) (int) $stats['paid']);
             self::render_card(
-                __('Signup → Paid', 'tipsbattle-aff-stats'),
+                __('Signup → Paid', 'wpam-aff-stats'),
                 TB_Aff_Stats_Query::format_percent((float) $stats['signup_to_paid'])
             );
             self::render_card(
-                __('EPC', 'tipsbattle-aff-stats'),
+                __('EPC', 'wpam-aff-stats'),
                 TB_Aff_Stats_Query::format_epc((float) $stats['epc'], (int) $stats['visits'])
             );
             echo '</div></section>';

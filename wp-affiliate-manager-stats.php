@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: TipsBattle Affiliate Stats
+ * Plugin Name: WP Affiliate Manager Stats
  * Description: Compact referral funnel stats for WP Affiliate Manager — Click → Signup → Paid, EPC, and readable admin/partner cards.
  * Version: 1.0.0
  * Author: Sanetchek
  * Author URI: https://github.com/Sanetchek
- * Text Domain: tipsbattle-aff-stats
+ * Text Domain: wpam-aff-stats
  * Requires Plugins: affiliates-manager, paid-memberships-pro
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 declare(strict_types=1);

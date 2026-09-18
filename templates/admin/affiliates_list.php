@@ -3,7 +3,7 @@
  * Standalone WPAM My Affiliates list (used when theme has no override).
  * Injects Funnel-capable list table via tb_wpam_affiliates_list_table_class.
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 defined('ABSPATH') || exit;

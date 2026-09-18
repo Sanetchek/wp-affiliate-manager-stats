@@ -2,7 +2,7 @@
 /**
  * Standalone partner Overview (used when theme has no override).
  *
- * @package TipsBattle_Affiliate_Stats
+ * @package WPAM_Affiliate_Stats
  */
 
 defined('ABSPATH') || exit;

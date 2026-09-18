@@ -1,10 +1,10 @@
-# TipsBattle Affiliate Stats
+# WP Affiliate Manager Stats
 
 WordPress companion for **[WP Affiliate Manager](https://wordpress.org/plugins/affiliates-manager/)** + **[Paid Memberships Pro](https://www.paidmembershipspro.com/)**.
 
 Compact Click → Signup → Paid funnel, EPC, and readable admin/partner cards — without paid WPAM/PMPro affiliate add-ons.
 
-Built for TipsBattle, but **usable on any site** that runs WPAM + PMPro (membership Free → paid ladder).
+Built for membership sites with a Free → paid ladder. **Works on any WordPress install** that runs WPAM + PMPro.
 
 ## Requirements
 
@@ -12,12 +12,12 @@ Built for TipsBattle, but **usable on any site** that runs WPAM + PMPro (members
 - [Affiliates Manager](https://wordpress.org/plugins/affiliates-manager/)
 - [Paid Memberships Pro](https://www.paidmembershipspro.com/)
 
-No TipsBattle theme required. The plugin ships fallback WPAM templates; if your theme already overrides `affiliates-manager/*.php`, those still win.
+No custom theme required. The plugin ships fallback WPAM templates; if your theme already overrides `affiliates-manager/*.php`, those still win.
 
 ## Install
 
-1. Copy folder to `wp-content/plugins/tipsbattle-affiliate-stats/`
-2. Activate **TipsBattle Affiliate Stats**
+1. Copy folder to `wp-content/plugins/wp-affiliate-manager-stats/`
+2. Activate **WP Affiliate Manager Stats**
 3. Open Affiliates → My Affiliates — Funnel column + detail cards
 4. Affiliate Overview shows All time / Today / This month cards
 
