@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Affiliate Manager Stats
  * Description: Compact referral funnel stats for WP Affiliate Manager — Click → Signup → Paid, EPC, and readable admin/partner cards.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Sanetchek
  * Author URI: https://github.com/Sanetchek
  * Text Domain: wpam-aff-stats
@@ -17,12 +17,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TB_AFF_STATS_VERSION', '1.1.0');
+define('TB_AFF_STATS_VERSION', '1.2.0');
 define('TB_AFF_STATS_PLUGIN_FILE', __FILE__);
 define('TB_AFF_STATS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TB_AFF_STATS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-/** Same first-touch meta key as the TipsBattle theme purchase bridge. */
+/** Same first-touch meta key as typical theme purchase bridges. */
 if (!defined('TB_WPAM_REFERRER_META_KEY')) {
     define('TB_WPAM_REFERRER_META_KEY', 'tb_wpam_referrer_id');
 }
@@ -34,6 +34,7 @@ require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-admin-list.p
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-admin-detail.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-partner.php';
 require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-export.php';
+require_once TB_AFF_STATS_PLUGIN_DIR . 'includes/class-tb-aff-stats-docs.php';
 
 /**
  * Whether WP Affiliate Manager is available.
@@ -48,6 +49,9 @@ function tb_aff_stats_wpam_ready(): bool
  */
 function tb_aff_stats_bootstrap(): void
 {
+    // Docs + Plugins-screen link always (even if WPAM temporarily missing).
+    TB_Aff_Stats_Docs::init();
+
     if (!tb_aff_stats_wpam_ready()) {
         return;
     }
@@ -59,7 +63,6 @@ function tb_aff_stats_bootstrap(): void
     TB_Aff_Stats_Partner::init();
     TB_Aff_Stats_Export::init();
 
-    // Standalone templates when the active theme does not override WPAM views.
     add_filter('wpam_load_template_files', 'tb_aff_stats_filter_template_files', 20, 2);
 }
 
@@ -84,7 +87,6 @@ function tb_aff_stats_filter_template_files(array $template_files, string $templ
     $out = [];
     $inserted = false;
     foreach ($template_files as $file) {
-        // Insert before WPAM's own html/ path so theme overrides still take priority.
         if (!$inserted && is_string($file) && str_contains($file, '/affiliates-manager/html/')) {
             $out[] = $ours;
             $inserted = true;

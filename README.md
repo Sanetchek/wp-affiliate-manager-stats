@@ -74,6 +74,13 @@ do_action('tb_affiliate_stats_overview');
 php tests/smoke/TbAffiliateStatsTest.php
 ```
 
+## Developer documentation
+
+In wp-admin: **Plugins → WP Affiliate Manager Stats → Documentation**  
+(or **Affiliates → WPAM Stats Docs** after activate).
+
+Source file: [`docs/developers.md`](docs/developers.md)
+
 ## License
 
 GPL-2.0-or-later (WordPress plugin compatible)

@@ -21,10 +21,12 @@ $required = [
     'includes/class-tb-aff-stats-admin-detail.php',
     'includes/class-tb-aff-stats-partner.php',
     'includes/class-tb-aff-stats-export.php',
+    'includes/class-tb-aff-stats-docs.php',
     'includes/class-tb-aff-stats-list-table.php',
     'includes/trait-tb-aff-stats-list-table.php',
     'templates/admin/affiliates_list.php',
     'templates/affiliate_cp_home.php',
+    'docs/developers.md',
     'assets/admin-affiliate-stats.css',
     'assets/partner-affiliate-stats.css',
 ];
@@ -50,12 +52,69 @@ foreach (
         'class-tb-aff-stats-attribution.php',
         'class-tb-aff-stats-commission.php',
         'TB_Aff_Stats_Commission::init',
+        'class-tb-aff-stats-docs.php',
+        'TB_Aff_Stats_Docs::init',
     ] as $needle
 ) {
     if (strpos($bootstrap, $needle) === false) {
         fwrite(STDERR, "Bootstrap missing: {$needle}\n");
         $failed++;
     }
+}
+
+$docs = (string) file_get_contents($root . '/includes/class-tb-aff-stats-docs.php');
+foreach (
+    [
+        'plugin_action_links_',
+        'Documentation',
+        'wpam-aff-stats-docs',
+        'markdown_to_html',
+        'docs/developers.md',
+    ] as $needle
+) {
+    if (strpos($docs, $needle) === false) {
+        fwrite(STDERR, "Docs class missing: {$needle}\n");
+        $failed++;
+    }
+}
+
+$devMd = (string) file_get_contents($root . '/docs/developers.md');
+foreach (
+    [
+        'Developer documentation',
+        'pmpro_after_checkout',
+        'wpam_process_affiliate_commission',
+        'tb_aff_stats_enable_pmpro_commission',
+        'tb_affiliate_stats_overview',
+    ] as $needle
+) {
+    if (strpos($devMd, $needle) === false) {
+        fwrite(STDERR, "developers.md missing: {$needle}\n");
+        $failed++;
+    }
+}
+
+// Pure markdown converter smoke (no WP bootstrap).
+if (!function_exists('esc_html')) {
+    function esc_html($t)
+    {
+        return htmlspecialchars((string) $t, ENT_QUOTES, 'UTF-8');
+    }
+}
+if (!defined('ABSPATH')) {
+    define('ABSPATH', '/tmp/');
+}
+if (!defined('TB_AFF_STATS_PLUGIN_FILE')) {
+    define('TB_AFF_STATS_PLUGIN_FILE', $root . '/wp-affiliate-manager-stats.php');
+}
+if (!defined('TB_AFF_STATS_PLUGIN_DIR')) {
+    define('TB_AFF_STATS_PLUGIN_DIR', $root . '/');
+}
+require_once $root . '/includes/class-tb-aff-stats-docs.php';
+$sample = TB_Aff_Stats_Docs::markdown_to_html("# Title\n\nHello **world** and `code`.\n\n```php\necho 1;\n```\n");
+if (strpos($sample, '<h1>') === false || strpos($sample, '<strong>world</strong>') === false || strpos($sample, '<pre>') === false) {
+    fwrite(STDERR, "markdown_to_html failed basic conversion\n");
+    $failed++;
 }
 
 $commission = (string) file_get_contents($root . '/includes/class-tb-aff-stats-commission.php');
