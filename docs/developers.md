@@ -11,6 +11,7 @@ This page is for developers integrating the plugin into a theme or custom checko
 | Persist first-touch referrer on `user_register` | Yes |
 | Funnel column on My Affiliates | Yes |
 | Metric cards on affiliate detail | Yes |
+| Admin Stats Dashboard (site-wide funnel) | Yes |
 | Partner Overview cards (All time / Today / Month) | Yes |
 | CSV export with funnel columns | Yes |
 | Commission on **native** PMPro checkout | Yes (optional; auto-skips if theme bridge exists) |
@@ -140,6 +141,8 @@ Without theme overrides, the plugin injects its own templates via `wpam_load_tem
 ```php
 TB_Aff_Stats_Query::get_stats(int $aff_id, ?array $range = null): array
 TB_Aff_Stats_Query::get_stats_for_affiliates(array $aff_ids, ?array $range = null): array
+TB_Aff_Stats_Query::get_program_stats(?array $range = null): array
+TB_Aff_Stats_Query::get_top_affiliates(int $limit = 5, ?array $range = null): array
 TB_Aff_Stats_Query::query_referred_users(int $aff_id, int $page = 1, int $per_page = 50): array
 TB_Aff_Stats_Query::format_percent(float $ratio): string
 TB_Aff_Stats_Query::format_epc(float $epc, int $visits): string
@@ -150,6 +153,8 @@ TB_Aff_Stats_Attribution::persist_referrer(int $user_id, int $aff_id = 0): int
 ```
 
 `$range` example: `['start' => '2026-01-01 00:00:00', 'end' => '2026-02-01 00:00:00']`.
+
+Admin UI: **Affiliates → Stats Dashboard** (`page=wpam-aff-stats-dashboard`) — site-wide funnel infographic, KPIs, membership mix, top affiliates (5 min transient cache).
 
 ## Filters & actions summary
 
@@ -169,10 +174,12 @@ includes/class-tb-aff-stats-query.php   Funnel SQL / formatters
 includes/class-tb-aff-stats-attribution.php  user_register persist
 includes/class-tb-aff-stats-commission.php   pmpro_after_checkout bridge
 includes/class-tb-aff-stats-admin-*.php Admin UI
+includes/class-tb-aff-stats-dashboard.php Admin Stats Dashboard
 includes/class-tb-aff-stats-partner.php Partner cards
 includes/class-tb-aff-stats-export.php  CSV
 includes/class-tb-aff-stats-docs.php    This documentation screen
 templates/                              Fallback WPAM views
+assets/admin-dashboard.css              Dashboard styles
 docs/developers.md                      Source of this page
 tests/smoke/TbAffiliateStatsTest.php    Smoke tests
 ```

@@ -18,8 +18,9 @@ No custom theme required. The plugin ships fallback WPAM templates; if your them
 
 1. Copy folder to `wp-content/plugins/wp-affiliate-manager-stats/`
 2. Activate **WP Affiliate Manager Stats**
-3. Open Affiliates → My Affiliates — Funnel column + detail cards
-4. Affiliate Overview shows All time / Today / This month cards
+3. Open **Affiliates → Stats Dashboard** for site-wide funnel + top affiliates
+4. Open Affiliates → My Affiliates — Funnel column + detail cards
+5. Affiliate Overview shows stock Today/Month panels, then Referral funnel cards
 
 ## Metrics
 

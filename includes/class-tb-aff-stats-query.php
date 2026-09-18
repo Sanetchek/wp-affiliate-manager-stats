@@ -595,6 +595,177 @@ final class TB_Aff_Stats_Query
     }
 
     /**
+     * Site-wide program stats (all affiliates), same shape as empty_stats().
+     *
+     * @param array{start?: string, end?: string}|null $range
+     * @return array{
+     *   visits:int,unique_visits:int,signups:int,free:int,paid:int,
+     *   advanced:int,pro:int,earnings:float,
+     *   click_to_signup:float,signup_to_paid:float,click_to_paid:float,epc:float
+     * }
+     */
+    public static function get_program_stats(?array $range = null): array
+    {
+        $ids = self::list_affiliate_ids();
+        if ($ids === []) {
+            return self::empty_stats();
+        }
+
+        $totals = self::empty_stats();
+        foreach (array_chunk($ids, 200) as $chunk) {
+            $batch = self::get_stats_for_affiliates($chunk, $range);
+            foreach ($batch as $stats) {
+                $totals['visits'] += (int) $stats['visits'];
+                $totals['unique_visits'] += (int) $stats['unique_visits'];
+                $totals['signups'] += (int) $stats['signups'];
+                $totals['paid'] += (int) $stats['paid'];
+                $totals['advanced'] += (int) $stats['advanced'];
+                $totals['pro'] += (int) $stats['pro'];
+                $totals['earnings'] += (float) $stats['earnings'];
+            }
+        }
+
+        $visits = (int) $totals['visits'];
+        $signups = (int) $totals['signups'];
+        $paid = (int) $totals['paid'];
+        $earnings = (float) $totals['earnings'];
+
+        $totals['free'] = max(0, $signups - $paid);
+        $totals['click_to_signup'] = $visits > 0 ? ($signups / $visits) : 0.0;
+        $totals['signup_to_paid'] = $signups > 0 ? ($paid / $signups) : 0.0;
+        $totals['click_to_paid'] = $visits > 0 ? ($paid / $visits) : 0.0;
+        $totals['epc'] = $visits > 0 ? ($earnings / $visits) : 0.0;
+
+        return $totals;
+    }
+
+    /**
+     * Top affiliates by paid referrals (fallback: signups), then visits.
+     *
+     * @param array{start?: string, end?: string}|null $range
+     * @return list<array{
+     *   affiliate_id:int,name:string,email:string,
+     *   visits:int,signups:int,free:int,paid:int,earnings:float,
+     *   signup_to_paid:float,epc:float
+     * }>
+     */
+    public static function get_top_affiliates(int $limit = 5, ?array $range = null): array
+    {
+        $limit = max(1, min(50, $limit));
+        $ids = self::list_affiliate_ids();
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = [];
+        foreach (array_chunk($ids, 200) as $chunk) {
+            $batch = self::get_stats_for_affiliates($chunk, $range);
+            $meta = self::affiliate_identity_map($chunk);
+            foreach ($batch as $aid => $stats) {
+                $aid = (int) $aid;
+                $identity = $meta[$aid] ?? ['name' => '', 'email' => ''];
+                $rows[] = [
+                    'affiliate_id' => $aid,
+                    'name' => (string) $identity['name'],
+                    'email' => (string) $identity['email'],
+                    'visits' => (int) $stats['visits'],
+                    'signups' => (int) $stats['signups'],
+                    'free' => (int) $stats['free'],
+                    'paid' => (int) $stats['paid'],
+                    'earnings' => (float) $stats['earnings'],
+                    'signup_to_paid' => (float) $stats['signup_to_paid'],
+                    'epc' => (float) $stats['epc'],
+                ];
+            }
+        }
+
+        usort(
+            $rows,
+            static function (array $a, array $b): int {
+                if ($a['paid'] !== $b['paid']) {
+                    return $b['paid'] <=> $a['paid'];
+                }
+                if ($a['signups'] !== $b['signups']) {
+                    return $b['signups'] <=> $a['signups'];
+                }
+
+                return $b['visits'] <=> $a['visits'];
+            }
+        );
+
+        return array_slice($rows, 0, $limit);
+    }
+
+    /**
+     * All WPAM affiliate IDs (any status).
+     *
+     * @return list<int>
+     */
+    public static function list_affiliate_ids(): array
+    {
+        global $wpdb;
+
+        $table = defined('WPAM_AFFILIATES_TBL')
+            ? WPAM_AFFILIATES_TBL
+            : $wpdb->prefix . 'wpam_affiliates';
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $ids = $wpdb->get_col("SELECT affiliateId FROM {$table} ORDER BY affiliateId ASC");
+        if (!is_array($ids)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('intval', $ids)));
+    }
+
+    /**
+     * @param list<int> $aff_ids
+     * @return array<int, array{name: string, email: string}>
+     */
+    private static function affiliate_identity_map(array $aff_ids): array
+    {
+        global $wpdb;
+
+        $aff_ids = array_values(array_unique(array_filter(array_map('intval', $aff_ids))));
+        if ($aff_ids === []) {
+            return [];
+        }
+
+        $table = defined('WPAM_AFFILIATES_TBL')
+            ? WPAM_AFFILIATES_TBL
+            : $wpdb->prefix . 'wpam_affiliates';
+        $placeholders = implode(',', array_fill(0, count($aff_ids), '%d'));
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $sql = self::prepare(
+            "SELECT affiliateId, firstName, lastName, email
+             FROM {$table}
+             WHERE affiliateId IN ({$placeholders})",
+            $aff_ids
+        );
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        $rows = $wpdb->get_results($sql, ARRAY_A);
+        $out = [];
+        if (!is_array($rows)) {
+            return $out;
+        }
+
+        foreach ($rows as $row) {
+            $aid = (int) ($row['affiliateId'] ?? 0);
+            if ($aid <= 0) {
+                continue;
+            }
+            $name = trim((string) ($row['firstName'] ?? '') . ' ' . (string) ($row['lastName'] ?? ''));
+            $out[$aid] = [
+                'name' => $name !== '' ? $name : ('#' . $aid),
+                'email' => (string) ($row['email'] ?? ''),
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
      * Today / this-month / all-time range helpers (site timezone).
      *
      * @return array{start: string, end: string}|null null = all time

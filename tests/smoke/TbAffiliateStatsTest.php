@@ -22,6 +22,7 @@ $required = [
     'includes/class-tb-aff-stats-partner.php',
     'includes/class-tb-aff-stats-export.php',
     'includes/class-tb-aff-stats-docs.php',
+    'includes/class-tb-aff-stats-dashboard.php',
     'includes/class-tb-aff-stats-list-table.php',
     'includes/trait-tb-aff-stats-list-table.php',
     'templates/admin/affiliates_list.php',
@@ -29,6 +30,7 @@ $required = [
     'docs/developers.md',
     'assets/admin-affiliate-stats.css',
     'assets/partner-affiliate-stats.css',
+    'assets/admin-dashboard.css',
 ];
 
 foreach ($required as $rel) {
@@ -54,6 +56,8 @@ foreach (
         'TB_Aff_Stats_Commission::init',
         'class-tb-aff-stats-docs.php',
         'TB_Aff_Stats_Docs::init',
+        'class-tb-aff-stats-dashboard.php',
+        'TB_Aff_Stats_Dashboard::init',
     ] as $needle
 ) {
     if (strpos($bootstrap, $needle) === false) {
@@ -86,6 +90,8 @@ foreach (
         'wpam_process_affiliate_commission',
         'tb_aff_stats_enable_pmpro_commission',
         'tb_affiliate_stats_overview',
+        'Stats Dashboard',
+        'get_program_stats',
     ] as $needle
 ) {
     if (strpos($devMd, $needle) === false) {
@@ -153,9 +159,11 @@ $query = (string) file_get_contents($root . '/includes/class-tb-aff-stats-query.
 foreach (
     [
         'function empty_stats',
-        'function paid_pmpro_level_ids',
         'function get_stats',
         'function get_stats_for_affiliates',
+        'function get_program_stats',
+        'function get_top_affiliates',
+        'function list_affiliate_ids',
         'function format_percent',
         'function format_epc',
         'function query_referred_users',
@@ -167,6 +175,31 @@ foreach (
 ) {
     if (strpos($query, $needle) === false) {
         fwrite(STDERR, "Query class missing: {$needle}\n");
+        $failed++;
+    }
+}
+
+$dashboard = (string) file_get_contents($root . '/includes/class-tb-aff-stats-dashboard.php');
+foreach (
+    [
+        'wpam-aff-stats-dashboard',
+        'Stats Dashboard',
+        'tb-aff-dash__funnel',
+        'get_program_stats',
+        'get_top_affiliates',
+        'wpam_aff_stats_dash_',
+    ] as $needle
+) {
+    if (strpos($dashboard, $needle) === false) {
+        fwrite(STDERR, "Dashboard class missing: {$needle}\n");
+        $failed++;
+    }
+}
+
+$dashCss = (string) file_get_contents($root . '/assets/admin-dashboard.css');
+foreach (['tb-aff-dash__funnel', 'tb-aff-dash__kpi', '--tb-dash-accent', 'prefers-reduced-motion'] as $needle) {
+    if (strpos($dashCss, $needle) === false) {
+        fwrite(STDERR, "Dashboard CSS missing: {$needle}\n");
         $failed++;
     }
 }
