@@ -3,7 +3,7 @@
  * Optional native PMPro checkout → WPAM commission bridge.
  *
  * Enabled by default when the theme does not already hook pmpro_after_checkout
- * for WPAM (e.g. TipsBattle purchase bridge). Disable via filter:
+ * for WPAM (theme purchase bridge). Disable via filter:
  * add_filter('tb_aff_stats_enable_pmpro_commission', '__return_false');
  *
  * @package WPAM_Affiliate_Stats
@@ -44,7 +44,7 @@ final class TB_Aff_Stats_Commission
      */
     public static function is_enabled(): bool
     {
-        // TipsBattle (or any theme) already bridges PMPro → WPAM — avoid double payout.
+        // Theme already bridges PMPro → WPAM — avoid double payout.
         if (has_action('pmpro_after_checkout', 'tb_wpam_award_on_pmpro_after_checkout')) {
             $default = false;
         } elseif (function_exists('tb_wpam_award_membership_commission')) {

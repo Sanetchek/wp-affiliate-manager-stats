@@ -46,7 +46,7 @@ Disable if you handle commissions yourself:
 add_filter('tb_aff_stats_enable_pmpro_commission', '__return_false');
 ```
 
-On TipsBattle the theme purchase bridge is detected automatically — the plugin does **not** double-award.
+If the active theme already bridges PMPro → WPAM, that is detected automatically — the plugin does **not** double-award.
 
 Whop / crypto / off-site gateways still need a fulfillment hook that calls `do_action('wpam_process_affiliate_commission', $args)` (or the theme bridge).
 

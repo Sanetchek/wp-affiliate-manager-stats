@@ -297,27 +297,23 @@ foreach (['visits', 'signups', 'free', 'paid', 'epc', 'signup_to_paid'] as $key)
     }
 }
 
-// Theme bridges (outside plugin).
-$theme = dirname($root, 2) . '/themes/Tipsbattle';
-$list = $theme . '/affiliates-manager/admin/affiliates_list.php';
-$home = $theme . '/affiliates-manager/affiliate_cp_home.php';
-if (is_readable($list)) {
+// Optional theme bridges (any theme that ships WPAM template overrides).
+$themesRoot = dirname($root, 2) . '/themes';
+$listCandidates = glob($themesRoot . '/*/affiliates-manager/admin/affiliates_list.php') ?: [];
+$homeCandidates = glob($themesRoot . '/*/affiliates-manager/affiliate_cp_home.php') ?: [];
+foreach ($listCandidates as $list) {
     $listSrc = (string) file_get_contents($list);
     if (strpos($listSrc, "apply_filters('tb_wpam_affiliates_list_table_class'") === false) {
-        fwrite(STDERR, "Theme affiliates_list.php missing tb_wpam_affiliates_list_table_class filter\n");
+        fwrite(STDERR, "Theme affiliates_list.php missing tb_wpam_affiliates_list_table_class filter: {$list}\n");
         $failed++;
     }
-} else {
-    fwrite(STDERR, "Theme affiliates_list.php not readable (skip bridge check)\n");
 }
-if (is_readable($home)) {
+foreach ($homeCandidates as $home) {
     $homeSrc = (string) file_get_contents($home);
     if (strpos($homeSrc, "do_action('tb_affiliate_stats_overview')") === false) {
-        fwrite(STDERR, "Theme affiliate_cp_home.php missing tb_affiliate_stats_overview action\n");
+        fwrite(STDERR, "Theme affiliate_cp_home.php missing tb_affiliate_stats_overview action: {$home}\n");
         $failed++;
     }
-} else {
-    fwrite(STDERR, "Theme affiliate_cp_home.php not readable (skip bridge check)\n");
 }
 
 if ($failed > 0) {
