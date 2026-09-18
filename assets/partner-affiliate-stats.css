@@ -3,10 +3,29 @@
  */
 
 .tb-aff-stats-partner {
-  margin: 20px 0 28px;
+  margin: 32px 0 8px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line, rgba(255, 255, 255, 0.12));
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.tb-aff-stats-partner__heading {
+  margin: 0;
+  font-family: var(--f-display, Georgia, serif);
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink, #f4f5f7);
+}
+
+.tb-aff-stats-partner__intro {
+  margin: -8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-muted, #9aa0ad);
 }
 
 .tb-aff-stats-partner__title {

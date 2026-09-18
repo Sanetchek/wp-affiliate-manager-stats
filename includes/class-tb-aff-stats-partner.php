@@ -76,6 +76,11 @@ final class TB_Aff_Stats_Partner
         ];
 
         echo '<div class="tb-aff-stats-partner">';
+        echo '<h2 class="tb-aff-stats-partner__heading">' . esc_html__('Referral funnel', 'wpam-aff-stats') . '</h2>';
+        echo '<p class="tb-aff-stats-partner__intro">' . esc_html__(
+            'Clicks → Signups → Free / Paid conversion for your referral link.',
+            'wpam-aff-stats'
+        ) . '</p>';
         foreach ($periods as $period) {
             $stats = TB_Aff_Stats_Query::get_stats($aff_id, $period['range']);
             $class = $period['emphasis'] ? ' tb-aff-stats-partner__section--primary' : '';

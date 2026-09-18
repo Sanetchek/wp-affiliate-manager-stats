@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Affiliate Manager Stats
  * Description: Compact referral funnel stats for WP Affiliate Manager — Click → Signup → Paid, EPC, and readable admin/partner cards.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Sanetchek
  * Author URI: https://github.com/Sanetchek
  * Text Domain: wpam-aff-stats
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('TB_AFF_STATS_VERSION', '1.2.0');
+define('TB_AFF_STATS_VERSION', '1.2.1');
 define('TB_AFF_STATS_PLUGIN_FILE', __FILE__);
 define('TB_AFF_STATS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TB_AFF_STATS_PLUGIN_URL', plugin_dir_url(__FILE__));

@@ -28,8 +28,6 @@ defined('ABSPATH') || exit;
             </tbody>
         </table>
 
-        <?php do_action('tb_affiliate_stats_overview'); ?>
-
         <table class="pure-table">
             <thead>
                 <tr>
@@ -97,5 +95,7 @@ defined('ABSPATH') || exit;
                 </tr>
             </tbody>
         </table>
+
+        <?php do_action('tb_affiliate_stats_overview'); ?>
     </div>
 </div>

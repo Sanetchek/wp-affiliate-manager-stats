@@ -207,12 +207,22 @@ foreach (
         'All time',
         'Signup → Paid',
         'EPC',
+        'Referral funnel',
+        'tb-aff-stats-partner__heading',
     ] as $needle
 ) {
     if (strpos($partner, $needle) === false) {
         fwrite(STDERR, "Partner UI missing: {$needle}\n");
         $failed++;
     }
+}
+
+$partnerTpl = (string) file_get_contents($root . '/templates/affiliate_cp_home.php');
+$stockPos = strpos($partnerTpl, "esc_html_e('This Month'");
+$funnelPos = strpos($partnerTpl, "do_action('tb_affiliate_stats_overview')");
+if ($stockPos === false || $funnelPos === false || $funnelPos < $stockPos) {
+    fwrite(STDERR, "Partner template must render funnel after stock This Month panel\n");
+    $failed++;
 }
 
 $export = (string) file_get_contents($root . '/includes/class-tb-aff-stats-export.php');
@@ -240,7 +250,7 @@ foreach (['tb-aff-funnel-cell', 'tb-aff-stats-cards', 'tb-aff-stats-detail', 'gr
 }
 
 $cssPartner = (string) file_get_contents($root . '/assets/partner-affiliate-stats.css');
-foreach (['tb-aff-stats-partner', 'tb-aff-stats-card__value', 'auto-fit'] as $needle) {
+foreach (['tb-aff-stats-partner', 'tb-aff-stats-partner__heading', 'tb-aff-stats-card__value', 'auto-fit', 'border-top'] as $needle) {
     if (strpos($cssPartner, $needle) === false) {
         fwrite(STDERR, "Partner CSS missing: {$needle}\n");
         $failed++;
