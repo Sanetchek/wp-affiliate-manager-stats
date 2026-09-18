@@ -83,15 +83,27 @@ final class TB_Aff_Stats_Dashboard
         $signups = (int) $stats['signups'];
         $paid = (int) $stats['paid'];
         $free = (int) $stats['free'];
-        $max_funnel = max(1, $visits, $signups, $paid);
+        $is_empty = ($visits + $signups + $paid) === 0;
+
+        $earnings_label = function_exists('wpam_format_money')
+            ? (string) wpam_format_money((float) $stats['earnings'], false)
+            : '$' . number_format((float) $stats['earnings'], 2, '.', '');
+
+        $epc_label = TB_Aff_Stats_Query::format_epc((float) $stats['epc'], $visits);
+        if ($epc_label === '—') {
+            $epc_label = 'n/a';
+        }
 
         echo '<div class="wrap tb-aff-dash">';
-        echo '<div class="tb-aff-dash__hero">';
+
+        // Stage: header + funnel as one surface.
+        echo '<header class="tb-aff-dash__stage">';
+        echo '<div class="tb-aff-dash__stage-top">';
         echo '<div class="tb-aff-dash__hero-copy">';
-        echo '<p class="tb-aff-dash__eyebrow">' . esc_html__('WP Affiliate Manager Stats', 'wpam-aff-stats') . '</p>';
-        echo '<h1>' . esc_html__('Referral program', 'wpam-aff-stats') . '</h1>';
+        echo '<p class="tb-aff-dash__eyebrow">' . esc_html__('Program overview', 'wpam-aff-stats') . '</p>';
+        echo '<h1>' . esc_html__('Referral funnel', 'wpam-aff-stats') . '</h1>';
         echo '<p class="tb-aff-dash__lede">' . esc_html__(
-            'Site-wide Click to Signup to Paid funnel across all affiliates.',
+            'How traffic from all affiliates becomes signups and paid members.',
             'wpam-aff-stats'
         ) . '</p>';
         echo '</div>';
@@ -99,103 +111,155 @@ final class TB_Aff_Stats_Dashboard
         foreach (self::period_labels() as $key => $label) {
             $url = $key === 'all' ? $base : add_query_arg('range', $key, $base);
             $class = $period === $key ? ' is-active' : '';
-            echo '<a class="tb-aff-dash__period' . esc_attr($class) . '" href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
+            $aria = $period === $key ? ' aria-current="page"' : '';
+            echo '<a class="tb-aff-dash__period' . esc_attr($class) . '" href="' . esc_url($url) . '"' . $aria . '>'
+                . esc_html($label) . '</a>';
         }
         echo '</nav>';
         echo '</div>';
 
-        // Hero funnel.
         echo '<section class="tb-aff-dash__funnel" aria-label="' . esc_attr__('Referral funnel', 'wpam-aff-stats') . '">';
-        echo '<div class="tb-aff-dash__funnel-track">';
-        self::render_funnel_step(__('Clicks', 'wpam-aff-stats'), $visits, $max_funnel, 'clicks');
-        echo '<div class="tb-aff-dash__funnel-edge">';
-        echo '<span>' . esc_html(TB_Aff_Stats_Query::format_percent((float) $stats['click_to_signup'])) . '</span>';
-        echo '<span class="tb-aff-dash__funnel-edge-label">' . esc_html__('Click → Signup', 'wpam-aff-stats') . '</span>';
-        echo '</div>';
-        self::render_funnel_step(__('Signups', 'wpam-aff-stats'), $signups, $max_funnel, 'signups');
-        echo '<div class="tb-aff-dash__funnel-edge">';
-        echo '<span>' . esc_html(TB_Aff_Stats_Query::format_percent((float) $stats['signup_to_paid'])) . '</span>';
-        echo '<span class="tb-aff-dash__funnel-edge-label">' . esc_html__('Signup → Paid', 'wpam-aff-stats') . '</span>';
-        echo '</div>';
-        self::render_funnel_step(__('Paid', 'wpam-aff-stats'), $paid, $max_funnel, 'paid');
-        echo '</div>';
+        if ($is_empty) {
+            echo '<p class="tb-aff-dash__funnel-hint">' . esc_html__(
+                'No clicks in this period yet. Numbers appear after affiliates share referral links.',
+                'wpam-aff-stats'
+            ) . '</p>';
+        }
+        echo '<ol class="tb-aff-dash__funnel-flow">';
+        self::render_funnel_node(1, __('Clicks', 'wpam-aff-stats'), $visits, 'clicks');
+        self::render_funnel_arrow(
+            TB_Aff_Stats_Query::format_percent((float) $stats['click_to_signup']),
+            __('to signup', 'wpam-aff-stats')
+        );
+        self::render_funnel_node(2, __('Signups', 'wpam-aff-stats'), $signups, 'signups');
+        self::render_funnel_arrow(
+            TB_Aff_Stats_Query::format_percent((float) $stats['signup_to_paid']),
+            __('to paid', 'wpam-aff-stats')
+        );
+        self::render_funnel_node(3, __('Paid', 'wpam-aff-stats'), $paid, 'paid');
+        echo '</ol>';
         echo '</section>';
+        echo '</header>';
 
-        // KPI strip.
-        $earnings_label = function_exists('wpam_format_money')
-            ? (string) wpam_format_money((float) $stats['earnings'], false)
-            : '$' . number_format((float) $stats['earnings'], 2, '.', '');
-
+        // KPI strip with short hints.
         $kpis = [
-            ['label' => __('Unique', 'wpam-aff-stats'), 'value' => (string) (int) $stats['unique_visits']],
-            ['label' => __('Free', 'wpam-aff-stats'), 'value' => (string) $free],
-            ['label' => __('Advanced', 'wpam-aff-stats'), 'value' => (string) (int) $stats['advanced']],
-            ['label' => __('Pro', 'wpam-aff-stats'), 'value' => (string) (int) $stats['pro']],
-            ['label' => __('Earnings', 'wpam-aff-stats'), 'value' => $earnings_label],
+            [
+                'label' => __('Unique visitors', 'wpam-aff-stats'),
+                'value' => (string) (int) $stats['unique_visits'],
+                'hint' => __('Distinct IPs', 'wpam-aff-stats'),
+            ],
+            [
+                'label' => __('Free', 'wpam-aff-stats'),
+                'value' => (string) $free,
+                'hint' => __('Signups without paid plan', 'wpam-aff-stats'),
+            ],
+            [
+                'label' => __('Advanced', 'wpam-aff-stats'),
+                'value' => (string) (int) $stats['advanced'],
+                'hint' => __('Active Advanced members', 'wpam-aff-stats'),
+            ],
+            [
+                'label' => __('Pro', 'wpam-aff-stats'),
+                'value' => (string) (int) $stats['pro'],
+                'hint' => __('Active Pro / Enterprise', 'wpam-aff-stats'),
+            ],
+            [
+                'label' => __('Earnings', 'wpam-aff-stats'),
+                'value' => $earnings_label,
+                'hint' => __('Affiliate commissions', 'wpam-aff-stats'),
+            ],
             [
                 'label' => __('EPC', 'wpam-aff-stats'),
-                'value' => TB_Aff_Stats_Query::format_epc((float) $stats['epc'], $visits),
+                'value' => $epc_label,
+                'hint' => __('Earnings per click', 'wpam-aff-stats'),
             ],
         ];
 
         echo '<section class="tb-aff-dash__kpis" aria-label="' . esc_attr__('Key metrics', 'wpam-aff-stats') . '">';
         foreach ($kpis as $kpi) {
-            echo '<div class="tb-aff-dash__kpi">';
-            echo '<div class="tb-aff-dash__kpi-value">' . esc_html($kpi['value']) . '</div>';
-            echo '<div class="tb-aff-dash__kpi-label">' . esc_html($kpi['label']) . '</div>';
+            echo '<article class="tb-aff-dash__kpi">';
+            echo '<p class="tb-aff-dash__kpi-label">' . esc_html($kpi['label']) . '</p>';
+            echo '<p class="tb-aff-dash__kpi-value">' . esc_html($kpi['value']) . '</p>';
+            echo '<p class="tb-aff-dash__kpi-hint">' . esc_html($kpi['hint']) . '</p>';
+            echo '</article>';
+        }
+        echo '</section>';
+
+        // Mix + top in a two-column board on wide screens.
+        $mix_total = $free + $paid;
+        $has_mix = $mix_total > 0;
+        $free_pct = $has_mix ? round(($free / $mix_total) * 100, 1) : 0.0;
+        $paid_pct = $has_mix ? round(($paid / $mix_total) * 100, 1) : 0.0;
+
+        echo '<div class="tb-aff-dash__board">';
+        echo '<section class="tb-aff-dash__panel tb-aff-dash__mix" aria-label="' . esc_attr__('Membership mix', 'wpam-aff-stats') . '">';
+        echo '<div class="tb-aff-dash__panel-head">';
+        echo '<h2>' . esc_html__('Signups mix', 'wpam-aff-stats') . '</h2>';
+        echo '<p>' . esc_html__('Free vs paid among referred members', 'wpam-aff-stats') . '</p>';
+        echo '</div>';
+        if (!$has_mix) {
+            echo '<div class="tb-aff-dash__empty-card">';
+            echo '<strong>' . esc_html__('No referred signups yet', 'wpam-aff-stats') . '</strong>';
+            echo '<span>' . esc_html__('The mix fills in when users register via affiliate links.', 'wpam-aff-stats') . '</span>';
+            echo '</div>';
+        } else {
+            echo '<div class="tb-aff-dash__mix-bar" role="img" aria-label="'
+                . esc_attr(sprintf(
+                    /* translators: 1: free percent, 2: paid percent */
+                    __('Free %1$s percent, Paid %2$s percent', 'wpam-aff-stats'),
+                    (string) $free_pct,
+                    (string) $paid_pct
+                ))
+                . '">';
+            echo '<span class="tb-aff-dash__mix-free" style="width:' . esc_attr((string) $free_pct) . '%"></span>';
+            echo '<span class="tb-aff-dash__mix-paid" style="width:' . esc_attr((string) $paid_pct) . '%"></span>';
+            echo '</div>';
+            echo '<div class="tb-aff-dash__mix-legend">';
+            echo '<span><i class="tb-aff-dash__dot tb-aff-dash__dot--free" aria-hidden="true"></i>'
+                . esc_html__('Free', 'wpam-aff-stats') . ' <b>' . esc_html((string) $free) . '</b>'
+                . ' <em>(' . esc_html((string) $free_pct) . '%)</em></span>';
+            echo '<span><i class="tb-aff-dash__dot tb-aff-dash__dot--paid" aria-hidden="true"></i>'
+                . esc_html__('Paid', 'wpam-aff-stats') . ' <b>' . esc_html((string) $paid) . '</b>'
+                . ' <em>(' . esc_html((string) $paid_pct) . '%)</em></span>';
             echo '</div>';
         }
         echo '</section>';
 
-        // Free vs Paid split.
-        $mix_total = max(1, $free + $paid);
-        $free_pct = round(($free / $mix_total) * 100, 1);
-        $paid_pct = round(($paid / $mix_total) * 100, 1);
-
-        echo '<section class="tb-aff-dash__mix" aria-label="' . esc_attr__('Membership mix', 'wpam-aff-stats') . '">';
-        echo '<h2>' . esc_html__('Signups mix', 'wpam-aff-stats') . '</h2>';
-        echo '<div class="tb-aff-dash__mix-bar" role="img" aria-label="'
-            . esc_attr(sprintf(
-                /* translators: 1: free percent, 2: paid percent */
-                __('Free %1$s percent, Paid %2$s percent', 'wpam-aff-stats'),
-                (string) $free_pct,
-                (string) $paid_pct
-            ))
-            . '">';
-        echo '<span class="tb-aff-dash__mix-free" style="width:' . esc_attr((string) $free_pct) . '%"></span>';
-        echo '<span class="tb-aff-dash__mix-paid" style="width:' . esc_attr((string) $paid_pct) . '%"></span>';
-        echo '</div>';
-        echo '<div class="tb-aff-dash__mix-legend">';
-        echo '<span><i class="tb-aff-dash__dot tb-aff-dash__dot--free"></i>'
-            . esc_html__('Free', 'wpam-aff-stats') . ' '
-            . esc_html((string) $free) . ' (' . esc_html((string) $free_pct) . '%)</span>';
-        echo '<span><i class="tb-aff-dash__dot tb-aff-dash__dot--paid"></i>'
-            . esc_html__('Paid', 'wpam-aff-stats') . ' '
-            . esc_html((string) $paid) . ' (' . esc_html((string) $paid_pct) . '%)</span>';
-        echo '</div>';
-        echo '</section>';
-
-        // Top affiliates.
-        echo '<section class="tb-aff-dash__top" aria-label="' . esc_attr__('Top affiliates', 'wpam-aff-stats') . '">';
+        echo '<section class="tb-aff-dash__panel tb-aff-dash__top" aria-label="' . esc_attr__('Top affiliates', 'wpam-aff-stats') . '">';
+        echo '<div class="tb-aff-dash__panel-head">';
         echo '<h2>' . esc_html__('Top affiliates', 'wpam-aff-stats') . '</h2>';
+        echo '<p>' . esc_html__('Ranked by paid referrals, then signups', 'wpam-aff-stats') . '</p>';
+        echo '</div>';
         if ($top === []) {
-            echo '<p class="tb-aff-dash__empty">' . esc_html__('No affiliate data yet.', 'wpam-aff-stats') . '</p>';
+            echo '<div class="tb-aff-dash__empty-card">';
+            echo '<strong>' . esc_html__('No affiliates yet', 'wpam-aff-stats') . '</strong>';
+            echo '<span>' . esc_html__('Approve partners under My Affiliates to see rankings here.', 'wpam-aff-stats') . '</span>';
+            echo '</div>';
         } else {
-            echo '<table class="tb-aff-dash__table widefat striped">';
+            echo '<div class="tb-aff-dash__table-wrap">';
+            echo '<table class="tb-aff-dash__table">';
             echo '<thead><tr>';
-            echo '<th>' . esc_html__('Affiliate', 'wpam-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Clicks', 'wpam-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Signups', 'wpam-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Paid', 'wpam-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('Signup → Paid', 'wpam-aff-stats') . '</th>';
-            echo '<th>' . esc_html__('EPC', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Rank', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Affiliate', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Clicks', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Signups', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Paid', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('Conv.', 'wpam-aff-stats') . '</th>';
+            echo '<th scope="col">' . esc_html__('EPC', 'wpam-aff-stats') . '</th>';
             echo '</tr></thead><tbody>';
+            $rank = 0;
             foreach ($top as $row) {
+                $rank++;
                 $aid = (int) $row['affiliate_id'];
                 $detail = admin_url('admin.php?page=wpam-affiliates&viewDetail=' . $aid);
                 $name = (string) $row['name'];
+                $row_epc = TB_Aff_Stats_Query::format_epc((float) $row['epc'], (int) $row['visits']);
+                if ($row_epc === '—') {
+                    $row_epc = 'n/a';
+                }
                 echo '<tr>';
-                echo '<td><a href="' . esc_url($detail) . '"><strong>' . esc_html($name) . '</strong></a>';
+                echo '<td><span class="tb-aff-dash__rank">' . esc_html((string) $rank) . '</span></td>';
+                echo '<td><a class="tb-aff-dash__name" href="' . esc_url($detail) . '">' . esc_html($name) . '</a>';
                 echo '<div class="tb-aff-dash__sub">#' . esc_html((string) $aid);
                 if ($row['email'] !== '') {
                     echo ' · ' . esc_html((string) $row['email']);
@@ -203,14 +267,16 @@ final class TB_Aff_Stats_Dashboard
                 echo '</div></td>';
                 echo '<td>' . esc_html((string) (int) $row['visits']) . '</td>';
                 echo '<td>' . esc_html((string) (int) $row['signups']) . '</td>';
-                echo '<td>' . esc_html((string) (int) $row['paid']) . '</td>';
+                echo '<td><strong>' . esc_html((string) (int) $row['paid']) . '</strong></td>';
                 echo '<td>' . esc_html(TB_Aff_Stats_Query::format_percent((float) $row['signup_to_paid'])) . '</td>';
-                echo '<td>' . esc_html(TB_Aff_Stats_Query::format_epc((float) $row['epc'], (int) $row['visits'])) . '</td>';
+                echo '<td>' . esc_html($row_epc) . '</td>';
                 echo '</tr>';
             }
             echo '</tbody></table>';
+            echo '</div>';
         }
         echo '</section>';
+        echo '</div>';
 
         echo '</div>';
     }
@@ -239,15 +305,21 @@ final class TB_Aff_Stats_Dashboard
         return $payload;
     }
 
-    private static function render_funnel_step(string $label, int $value, int $max, string $mod): void
+    private static function render_funnel_node(int $step, string $label, int $value, string $mod): void
     {
-        $pct = max(12, (int) round(($value / max(1, $max)) * 100));
-        echo '<div class="tb-aff-dash__funnel-step tb-aff-dash__funnel-step--' . esc_attr($mod) . '">';
-        echo '<div class="tb-aff-dash__funnel-bar" style="--tb-funnel-h:' . esc_attr((string) $pct) . '%">';
+        echo '<li class="tb-aff-dash__funnel-node tb-aff-dash__funnel-node--' . esc_attr($mod) . '">';
+        echo '<span class="tb-aff-dash__funnel-stepnum">' . esc_html((string) $step) . '</span>';
         echo '<span class="tb-aff-dash__funnel-value">' . esc_html((string) $value) . '</span>';
-        echo '</div>';
-        echo '<div class="tb-aff-dash__funnel-label">' . esc_html($label) . '</div>';
-        echo '</div>';
+        echo '<span class="tb-aff-dash__funnel-label">' . esc_html($label) . '</span>';
+        echo '</li>';
+    }
+
+    private static function render_funnel_arrow(string $rate, string $caption): void
+    {
+        echo '<li class="tb-aff-dash__funnel-edge" aria-hidden="true">';
+        echo '<span class="tb-aff-dash__funnel-rate">' . esc_html($rate) . '</span>';
+        echo '<span class="tb-aff-dash__funnel-edge-label">' . esc_html($caption) . '</span>';
+        echo '</li>';
     }
 
     private static function can_manage(): bool

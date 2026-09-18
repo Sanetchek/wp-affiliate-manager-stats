@@ -185,6 +185,8 @@ foreach (
         'wpam-aff-stats-dashboard',
         'Stats Dashboard',
         'tb-aff-dash__funnel',
+        'tb-aff-dash__funnel-flow',
+        'tb-aff-dash__stage',
         'get_program_stats',
         'get_top_affiliates',
         'wpam_aff_stats_dash_',
@@ -197,7 +199,7 @@ foreach (
 }
 
 $dashCss = (string) file_get_contents($root . '/assets/admin-dashboard.css');
-foreach (['tb-aff-dash__funnel', 'tb-aff-dash__kpi', '--tb-dash-accent', 'prefers-reduced-motion'] as $needle) {
+foreach (['tb-aff-dash__funnel', 'tb-aff-dash__kpi', 'tb-aff-dash__stage', '--tb-dash-accent', 'prefers-reduced-motion', 'tb-aff-dash__empty-card'] as $needle) {
     if (strpos($dashCss, $needle) === false) {
         fwrite(STDERR, "Dashboard CSS missing: {$needle}\n");
         $failed++;
